@@ -13,7 +13,6 @@ COPY etc_ide.d/variables/* /etc/ide.d/variables/
 RUN apt-get update &&\
   DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends \
   locales &&\
-  sed -i -e 's/# en_US.UTF-8 UTF-8/en_US.UTF-8 UTF-8/' /etc/locale.gen &&\
   echo 'LANG="en_US.UTF-8"'>/etc/default/locale &&\
   locale-gen en_US.UTF-8 &&\
   update-locale LANG=en_US.UTF-8 &&\
@@ -22,11 +21,13 @@ RUN apt-get update &&\
   wget curl libxrender1 libxi6 libgconf-2-4 libfreetype6 xfce4
 
 RUN echo 'Downloading Pycharm' &&\
-  wget --quiet --show-progress --progress=bar:force --no-check-certificate http://http.archive.ai-traders.com/files/pycharm/pycharm-community-2016.3.2.tar.gz -O /tmp/pycharm-community.tar.gz &&\
+  wget --quiet --progress=bar:force --no-check-certificate http://http.archive.ai-traders.com/files/pycharm/pycharm-community-2016.3.2.tar.gz -O /tmp/pycharm-community.tar.gz &&\
   echo 'Installing Pycharm' &&\
   mkdir -p /opt/pycharm &&\
-  cd /tmp && tar -xf /tmp/pycharm-community.tar.gz && mv pycharm-*/* /opt/intellij &&\
-  rm -r /tmp/pycharm-community.tar.gz /tmp/pycharm-* &&\
+  cd /tmp && tar -xf /tmp/pycharm-community.tar.gz &&\
+  rm -r /tmp/pycharm-community.tar.gz &&\
+  mv pycharm-community-*/* /opt/pycharm &&\
+  rm /tmp/pycharm-* -r &&\
   ln -s /opt/pycharm/bin/pycharm.sh /usr/local/bin/pycharm
 
 ENTRYPOINT ["/usr/bin/tini", "-g", "--", "/usr/bin/entrypoint.sh"]

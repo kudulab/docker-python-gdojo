@@ -19,7 +19,7 @@ task :save_version do
   version_file = "#{image_dir}/etc_ide.d/variables/60-variables.sh"
 
   text = File.read(version_file)
-  base_image_version = "#{python2_ide_last_tag()}_warm"
+  base_image_version = python2_ide_last_tag()
   new_contents = text.gsub(/BASE_IMAGE_VERSION/, base_image_version)
   File.open(version_file, "w") {|file| file.puts new_contents }
 

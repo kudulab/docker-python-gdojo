@@ -25,15 +25,10 @@ def generate_idefiles()
 IDE_DOCKER_IMAGE=\"#{docker_image}\"
 IDE_IDENTITY=\"#{full_identity}\"
 ")
-  File.write("#{test_ide_work}/IdefileSelenium", "IDE_DRIVER=docker
-IDE_DOCKER_IMAGE=\"java-gide:selenium\"
-IDE_IDENTITY=\"#{full_identity}\"
-")
 end
 
 def rm_idefiles()
   FileUtils.rm("#{test_ide_work}/Idefile")
-  FileUtils.rm("#{test_ide_work}/IdefileSelenium")
 end
 
 # improving String class

@@ -51,10 +51,9 @@ pipelines:
           clean_workspace: true
           jobs:
             end_user:
-              # Use big go-agent for selenium tests
               resources:
                 - docker
-                - big
+                - small
               tasks:
                 - fetch:
                     stage: build
