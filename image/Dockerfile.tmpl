@@ -17,8 +17,8 @@ RUN apt-get update &&\
   locale-gen en_US.UTF-8 &&\
   update-locale LANG=en_US.UTF-8 &&\
   dpkg-reconfigure --frontend=noninteractive locales  &&\
-  DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends \
-  wget curl libxrender1 libxi6 libgconf-2-4 libfreetype6 xfce4
+  DEBIAN_FRONTEND=noninteractive apt-get install --no-install-recommends -y \
+  wget curl libxrender1 libxi6 libgconf-2-4 libfreetype6 libxtst6 xfce4
 
 RUN echo 'Downloading Pycharm' &&\
   wget --quiet --progress=bar:force --no-check-certificate http://http.archive.ai-traders.com/files/pycharm/pycharm-community-2016.3.2.tar.gz -O /tmp/pycharm-community.tar.gz &&\
