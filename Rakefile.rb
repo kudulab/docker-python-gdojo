@@ -43,8 +43,9 @@ DockerImageRake::BuildNoCookbook.new(image_opts)
 task :save_python2_ide_version do
   python2_ide_last_tag_value = python2_ide_last_tag()
   DockerImageRake::Logging.logger.info("Will docker build from python2-ide:#{python2_ide_last_tag_value}", true)
+  dockerfile_tmpl = "#{image_dir}/Dockerfile.tmpl"
   dockerfile = "#{image_dir}/Dockerfile"
-  text = File.read(dockerfile)
+  text = File.read(dockerfile_tmpl)
   new_contents = text.gsub(/{{BASE_IMAGE_VERSION}}/, python2_ide_last_tag())
   File.open(dockerfile, "w") {|file| file.puts new_contents }
 end
