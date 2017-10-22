@@ -1,7 +1,12 @@
-### 0.2.0 (2017-Oct-22)
+### 0.2.1 (2017-Oct-22)
 
  * Support multiple python versions in base images.
  * Move from ruby to bash tasks
+
+### 0.2.0
+
+Removed ruby tasks.
+Introduced invalid release cycle.
 
 ### 0.1.1
 
