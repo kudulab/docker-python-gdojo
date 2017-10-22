@@ -1,0 +1,133 @@
+#!/bin/bash
+
+set -e
+if [[ ! -f ./releaser ]];then
+  wget --quiet http://http.archive.ai-traders.com/releaser/1.0.3/releaser
+fi
+source ./releaser
+if [[ ! -f ./docker-ops ]];then
+  wget --quiet http://http.archive.ai-traders.com/docker-ops/0.2.2/docker-ops
+fi
+source ./docker-ops
+# This goes as last in order to let end user variables override default values
+releaser_init
+
+image_name_no_registry="python2-gide"
+image_name="docker-registry.ai-traders.com/$image_name_no_registry"
+image_dir="./image"
+
+function base_ide_last_tag {
+  git ls-remote --tags git@git.ai-traders.com:stcdev/docker-python2-ide.git | sort -t '/' -k 3 -V | awk '{print $2}' | cut -d'/' -f3 | tail -1
+}
+
+function build {
+  prefix=$1
+  imagerc_filename="imagerc.$prefix"
+  base_img_version=$(base_ide_last_tag)
+  base_img_tag=$prefix-$base_img_version
+  image_tag=$prefix-$(git rev-parse HEAD)
+  production_image_tag=$prefix-"$(get_next_oversion)_${base_img_version}"
+  docker_build_options="--build-arg this_image_name=${image_name_no_registry} --build-arg this_image_tag=${production_image_tag} -f Dockerfile.$prefix"
+  sed "s/{{BASE_IMAGE_VERSION}}/${base_img_tag}/g" image/Dockerfile.tmpl > image/Dockerfile.$prefix
+  docker_build "${image_dir}" "${imagerc_filename}" "${image_name}" "$image_tag" $docker_build_options
+}
+
+function itest {
+  prefix=$1
+  imagerc_filename="imagerc.$prefix"
+  # Test configs
+  source_imagerc "./image" "${imagerc_filename}"
+  echo "Testing image: ${AIT_DOCKER_IMAGE_NAME}:${AIT_DOCKER_IMAGE_TAG}"
+  # do not use the production ENTRYPOINT
+  echo "IDE_DOCKER_IMAGE=\"${AIT_DOCKER_IMAGE_NAME}:${AIT_DOCKER_IMAGE_TAG}\"" > ./Idefile.to_be_tested_configs
+  echo "IDE_DOCKER_OPTIONS=\"--entrypoint=/bin/bash\"" >> ./Idefile.to_be_tested_configs
+  echo "IDE_IDENTITY=\"$(pwd)/test/integration/identities/full\"" >> ./Idefile.to_be_tested_configs
+  echo "IDE_WORK=$(pwd)/test/integration/configs/test_ide_work" >> Idefile.to_be_tested_configs
+  time bats "$(pwd)/test/integration/configs/bats"
+  # Test end-cases
+  source_imagerc "./image" "${imagerc_filename}"
+  echo "Testing image: ${AIT_DOCKER_IMAGE_NAME}:${AIT_DOCKER_IMAGE_TAG}"
+  # use the production ENTRYPOINT
+  echo "IDE_DOCKER_IMAGE=\"${AIT_DOCKER_IMAGE_NAME}:${AIT_DOCKER_IMAGE_TAG}\"" > ./Idefile.to_be_tested
+  echo "IDE_DRIVER=$ide_driver" >> ./Idefile.to_be_tested
+  echo "IDE_IDENTITY=\"$(pwd)/test/integration/identities/full\"" >> ./Idefile.to_be_tested
+  echo "IDE_WORK=$(pwd)/test/integration/end_user/test_ide_work" >> Idefile.to_be_tested
+  time bats "$(pwd)/test/integration/end_user/bats"
+  exit $?
+}
+
+function publish {
+  prefix=$1
+  imagerc_filename="imagerc.$prefix"
+  source_imagerc "${image_dir}"  "${imagerc_filename}"
+  gide_version=$(get_last_version_from_changelog $changelog_file)
+  ide_version=$(base_ide_last_tag)
+  production_image_tag="$prefix-${gide_version}_${ide_version}"
+  docker_push "${AIT_DOCKER_IMAGE_NAME}" "${AIT_DOCKER_IMAGE_TAG}" "${production_image_tag}"
+}
+
+command="$1"
+case "${command}" in
+  set_version)
+      next_version=$(get_next_oversion)
+      set_version_in_changelog "${changelog_file}" "${next_version}"
+      exit $?
+      ;;
+  verify_version)
+      # conditional verify
+      git fetch origin
+      current_commit_git_tags=$(git tag -l --points-at HEAD)
+      if [[ "${current_commit_git_tags}" != "" ]];then
+        log_info "Current commit is already tagged"
+      else
+        log_info "Current commit has no tags, full verify_version"
+        verify_version_for_release
+      fi
+      exit $?
+      ;;
+  build_py27)
+      build "py27"
+      exit $?
+      ;;
+  build_py35)
+      build "py35"
+      exit $?
+      ;;
+  itest_py27)
+      itest "py27"
+      exit $?
+      ;;
+  itest_py35)
+      itest "py35"
+      exit $?
+      ;;
+  code_release)
+      # conditional release
+      git fetch origin
+      current_commit_git_tags=$(git tag -l --points-at HEAD)
+      if [[ "${current_commit_git_tags}" != "" ]];then
+        log_info "Current commit is already tagged, skipping code release"
+      else
+        log_info "Current commit has no tags, starting code release..."
+        verify_version_for_release
+        git_tag_from_oversion
+        old_version=$(get_next_oversion)
+        next_version=$(bump_patch_version "${old_version}")
+        set_next_oversion "${next_version}"
+      fi
+      exit $?
+      ;;
+  publish_py27)
+      publish "py27"
+      exit $?
+      ;;
+  publish_py35)
+      publish "py35"
+      exit $?
+      ;;
+  *)
+      echo "Invalid command: '${command}'"
+      exit 1
+      ;;
+esac
+set +e

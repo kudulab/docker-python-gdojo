@@ -1,11 +1,1 @@
-[diff]
-	tool = meld
-	external = /usr/bin/git-meld.py
-[core]
-	editor = emacs
-[push]
-	default = simple
-[gui]
-	editor = emacs
-[color]
-	ui = auto
+inside .gitconfig

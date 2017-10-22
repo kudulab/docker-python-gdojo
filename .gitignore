@@ -1,2 +1,11 @@
 /image/imagerc*
-/image/Dockerfile
+/docker-ops
+/image/Dockerfile.py*
+/releaser
+/test/integration/end_user/test_ide_work/__pycache__/
+/test/integration/end_user/test_ide_work/example-pythonide2/example_pythonide2.egg-info/
+/test/integration/end_user/test_ide_work/*.pyc
+/test/integration/identities/real/.gitconfig
+/test/integration/identities/real/.ssh/id_rsa
+/Idefile.to_be_tested
+/Idefile.to_be_tested_configs

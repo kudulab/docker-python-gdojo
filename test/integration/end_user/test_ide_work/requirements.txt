@@ -1,0 +1,3 @@
+locustio
+requests
+requests_toolbelt

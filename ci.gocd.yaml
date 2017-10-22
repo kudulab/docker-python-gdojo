@@ -5,95 +5,127 @@ pipelines:
     materials:
       git:
         git: "git@git.ai-traders.com:stcdev/docker-python2-gide.git"
-        branch: ci
+        branch: master
       python2ide:
         pipeline: docker-python2-ide
         stage: publish
     stages:
-      - style_unit:
+      - validate:
           clean_workspace: true
           jobs:
-            validate_repo:
+            verify_version:
               resources:
-                - docker
-                - small
+                - docker_builder
               tasks:
-                - exec:
-                    command: ide
-                    arguments:
-                      - "bundle install && bundle exec rake go:git:destructive_validate_repo"
-            repocritic:
-              resources:
-                - docker
-                - small
-              tasks:
-                - exec:
-                    command: ide
-                    arguments:
-                      - "bundle install && bundle exec rake style:repocritic"
+               - exec:
+                  command: /bin/bash
+                  arguments:
+                    - -c
+                    - ./tasks verify_version
       - build:
           clean_workspace: true
           jobs:
-            docker_image:
+            py27:
               resources:
-                - docker
-                - small
+                - docker_builder
               artifacts:
                 - build:
-                    source: image/imagerc
+                    source: image/imagerc*
                     destination:
               tasks:
                 - exec:
-                    command: ide
+                    command: /bin/bash
                     arguments:
-                      - "bundle install && bundle exec rake build"
+                      - -c
+                      - ./tasks build_py27
+            py35:
+              resources:
+                - docker_builder
+              artifacts:
+                - build:
+                    source: image/imagerc*
+                    destination:
+              tasks:
+                - exec:
+                    command: /bin/bash
+                    arguments:
+                      - -c
+                      - ./tasks build_py35
       - itest:
           clean_workspace: true
           jobs:
-            end_user:
+            py27:
               resources:
-                - docker
-                - small
+                - docker_builder
               tasks:
                 - fetch:
                     stage: build
-                    job: docker_image
+                    job: py27
                     is_file: yes
-                    source: imagerc
+                    source: imagerc.py27
                     destination: image/
-                # imagerc file is sourced by dockerimagerake
                 - exec:
-                    command: ide
+                    command: /bin/bash
                     arguments:
-                      - "bundle install && bundle exec rake install_ide && bundle exec rake build && bundle exec rake end_user"
+                      - -c
+                      - ./tasks itest_py27
+            py35:
+              resources:
+                - docker_builder
+              tasks:
+                - fetch:
+                    stage: build
+                    job: py35
+                    is_file: yes
+                    source: imagerc.py35
+                    destination: image/
+                - exec:
+                    command: /bin/bash
+                    arguments:
+                      - -c
+                      - ./tasks itest_py35
       - release:
           clean_workspace: true
           jobs:
             code:
               resources:
-                - docker
-                - small
+                - docker_builder
               tasks:
                 - exec:
-                    command: ide
+                    command: /bin/bash
                     arguments:
-                      - "bundle install && bundle exec rake release:conditional_release"
+                      - -c
+                      - ./tasks code_release
       - publish:
           clean_workspace: true
           jobs:
-            docker_image:
+            py27:
               resources:
-                - docker
-                - small
+                - docker_builder
               tasks:
                 - fetch:
                     stage: build
-                    job: docker_image
+                    job: py27
                     is_file: yes
-                    source: imagerc
+                    source: imagerc.py27
                     destination: image/
-                # imagerc file is sourced by dockerimagerake
                 - exec:
-                    command: ide
+                    command: /bin/bash
                     arguments:
-                      - "bundle install && bundle exec rake publish:image"
+                      - -c
+                      - ./tasks publish_py27
+            py35:
+              resources:
+                - docker_builder
+              tasks:
+                - fetch:
+                    stage: build
+                    job: py35
+                    is_file: yes
+                    source: imagerc.py35
+                    destination: image/
+                - exec:
+                    command: /bin/bash
+                    arguments:
+                      - -c
+                      - ./tasks publish_py35

@@ -1,7 +1,8 @@
 # docker-python2-gide
 
-An IDE docker image with Python 2.7 CLI and graphical tools.
+An IDE docker image with Python runtime, CLI and graphical tools.
 Based on [python2-ide](http://gitlab.ai-traders.com/stcdev/docker-python2-ide).
+There is a **GIDE for each python version supported in python2-ide**.
 
 ## Specification
 All what's in [python2-ide](http://gitlab.ai-traders.com/stcdev/docker-python2-ide) and:

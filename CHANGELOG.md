@@ -1,3 +1,8 @@
+### 0.2.0 (2017-Oct-22)
+
+ * Support multiple python versions in base images.
+ * Move from ruby to bash tasks
+
 ### 0.1.1
 
  * make Dockerfile use Dockerfile.tmpl

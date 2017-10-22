@@ -2,6 +2,17 @@
 # I added {{ }} so that docker build fails if it is not replaced.
 FROM docker-registry.ai-traders.com/python2-ide:{{BASE_IMAGE_VERSION}}
 
+ENV TINI_VERSION v0.9.0
+ADD https://github.com/krallin/tini/releases/download/${TINI_VERSION}/tini /tini
+ADD https://github.com/krallin/tini/releases/download/${TINI_VERSION}/tini.asc /tini.asc
+RUN gpg --keyserver ha.pool.sks-keyservers.net --recv-keys 0527A9B7 \
+ && gpg --verify /tini.asc && mv /tini /usr/bin/tini && chmod +x /usr/bin/tini &&\
+ rm /tini.asc
+
+ARG this_image_tag
+ARG this_image_name
+ENV this_image_tag=${this_image_tag} this_image_name=${this_image_name}
+
 COPY etc_ide.d/scripts/* /etc/ide.d/scripts/
 COPY etc_ide.d/variables/* /etc/ide.d/variables/
 
@@ -15,7 +26,7 @@ RUN apt-get update &&\
   locales &&\
   echo 'LANG="en_US.UTF-8"'>/etc/default/locale &&\
   locale-gen en_US.UTF-8 &&\
-  update-locale LANG=en_US.UTF-8 &&\
+  update-locale LANG=C.UTF-8 &&\
   dpkg-reconfigure --frontend=noninteractive locales  &&\
   DEBIAN_FRONTEND=noninteractive apt-get install --no-install-recommends -y \
   wget curl libxrender1 libxi6 libgconf-2-4 libfreetype6 libxtst6 xfce4
