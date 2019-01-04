@@ -29,9 +29,11 @@ RUN echo 'Downloading Pycharm' &&\
   ln -s /opt/pycharm/bin/pycharm.sh /usr/local/bin/pycharm
 
 ENTRYPOINT ["/usr/bin/entrypoint.sh"]
-CMD ["pycharm & /bin/bash"]
+CMD ["source virtualenv.sh; pycharm & /bin/bash"]
 
 COPY etc_ide.d/scripts/* /etc/ide.d/scripts/
+COPY pycharm-ide-level-settings /home/ide/pycharm-ide-level-settings/
+RUN chown ide:ide -R /home/ide
 
 ARG this_image_tag_arg
 ARG this_image_name_arg

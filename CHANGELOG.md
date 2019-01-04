@@ -1,4 +1,8 @@
 * install gnome-icon-theme or else pycharm 2018.3.2 has no icons
+* preserve PyCharm IDE-level settings, however we have to still accept JetBrains
+ policy privacy each time we run in new ide container #11058. Default configs now:
+ set python3.5 interpreter from /ide/virtualenvs/testenv/bin/python3.5,
+ turn off pycharm hints and set /ide/work as workspace
 
 ### 0.2.2 (2019-Jan-04)
 
