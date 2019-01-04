@@ -1,3 +1,5 @@
+* reproducible builds - build docker image using last version from changelog
+
 ### 0.2.1 (2017-Oct-22)
 
  * Support multiple python versions in base images.
