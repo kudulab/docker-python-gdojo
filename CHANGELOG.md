@@ -1,4 +1,5 @@
 * reproducible builds - build docker image using last version from changelog
+* remove configs tests (itests are enough)
 
 ### 0.2.1 (2017-Oct-22)
 

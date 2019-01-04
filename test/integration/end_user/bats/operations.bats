@@ -20,6 +20,13 @@ package_name="example-pythonide2"
   refute_output "root"
   assert_equal "$status" 0
 }
+@test "git is installed" {
+  run /bin/bash -c "ide --idefile Idefile.to_be_tested \"git --version\""
+  # this is printed on test failure
+  echo "output: $output"
+  assert_line --partial "git version"
+  assert_equal "$status" 0
+}
 @test "python is installed" {
   run /bin/bash -c "ide --idefile Idefile.to_be_tested \"python --version\""
   # this is printed on test failure
