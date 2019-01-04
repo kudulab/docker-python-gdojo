@@ -1,3 +1,5 @@
+* install gnome-icon-theme or else pycharm 2018.3.2 has no icons
+
 ### 0.2.2 (2019-Jan-04)
 
 * reproducible builds - build docker image using last version from changelog

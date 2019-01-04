@@ -15,7 +15,7 @@ RUN apt-get update &&\
   update-locale LANG=C.UTF-8 &&\
   dpkg-reconfigure --frontend=noninteractive locales  &&\
   DEBIAN_FRONTEND=noninteractive apt-get install --no-install-recommends -y \
-  wget curl libxrender1 libxi6 libgconf-2-4 libfreetype6 libxtst6 xfce4
+  wget curl libxrender1 libxi6 libgconf-2-4 libfreetype6 libxtst6 xfce4 gnome-icon-theme
 
 # original link: https://download.jetbrains.com/python/pycharm-community-2018.3.2.tar.gz
 RUN echo 'Downloading Pycharm' &&\
