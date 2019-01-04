@@ -9,13 +9,6 @@ RUN gpg --keyserver ha.pool.sks-keyservers.net --recv-keys 0527A9B7 \
  && gpg --verify /tini.asc && mv /tini /usr/bin/tini && chmod +x /usr/bin/tini &&\
  rm /tini.asc
 
-ARG this_image_tag
-ARG this_image_name
-ENV this_image_tag=${this_image_tag} this_image_name=${this_image_name}
-
-COPY etc_ide.d/scripts/* /etc/ide.d/scripts/
-COPY etc_ide.d/variables/* /etc/ide.d/variables/
-
 # * locales package is 16MB but at least we have locale configured
 # * dpkg-reconfigure --frontend=noninteractive locales -- for already installed
 # packages
@@ -43,3 +36,10 @@ RUN echo 'Downloading Pycharm' &&\
 
 ENTRYPOINT ["/usr/bin/tini", "-g", "--", "/usr/bin/entrypoint.sh"]
 CMD ["pycharm & /bin/bash"]
+
+COPY etc_ide.d/scripts/* /etc/ide.d/scripts/
+COPY etc_ide.d/variables/* /etc/ide.d/variables/
+
+ARG this_image_tag_arg
+ARG this_image_name_arg
+ENV this_image_tag=${this_image_tag_arg} this_image_name=${this_image_name_arg}

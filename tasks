@@ -27,7 +27,7 @@ function build {
   base_img_tag=$prefix-$base_img_version
   image_tag=$prefix-$(git rev-parse HEAD)
   production_image_tag="$prefix-$(get_last_version_from_changelog ${changelog_file})_${base_img_version}"
-  docker_build_options="--build-arg this_image_name=${image_name_no_registry} --build-arg this_image_tag=${production_image_tag} -f Dockerfile.$prefix"
+  docker_build_options="--build-arg this_image_name_arg=${image_name_no_registry} --build-arg this_image_tag_arg=${production_image_tag} -f Dockerfile.$prefix"
   sed "s/{{BASE_IMAGE_VERSION}}/${base_img_tag}/g" image/Dockerfile.tmpl > image/Dockerfile.$prefix
   docker_build "${image_dir}" "${imagerc_filename}" "${image_name}" "$image_tag" $docker_build_options
 }
