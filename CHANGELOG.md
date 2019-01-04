@@ -1,3 +1,5 @@
+### 0.2.3 (2019-Jan-04)
+
 * install gnome-icon-theme or else pycharm 2018.3.2 has no icons
 * preserve PyCharm IDE-level settings, however we have to still accept JetBrains
  policy privacy each time we run in new ide container #11058. Default configs now:
