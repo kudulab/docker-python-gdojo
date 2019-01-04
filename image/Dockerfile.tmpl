@@ -2,13 +2,6 @@
 # I added {{ }} so that docker build fails if it is not replaced.
 FROM docker-registry.ai-traders.com/python2-ide:{{BASE_IMAGE_VERSION}}
 
-ENV TINI_VERSION v0.9.0
-ADD https://github.com/krallin/tini/releases/download/${TINI_VERSION}/tini /tini
-ADD https://github.com/krallin/tini/releases/download/${TINI_VERSION}/tini.asc /tini.asc
-RUN gpg --keyserver ha.pool.sks-keyservers.net --recv-keys 0527A9B7 \
- && gpg --verify /tini.asc && mv /tini /usr/bin/tini && chmod +x /usr/bin/tini &&\
- rm /tini.asc
-
 # * locales package is 16MB but at least we have locale configured
 # * dpkg-reconfigure --frontend=noninteractive locales -- for already installed
 # packages
@@ -34,7 +27,7 @@ RUN echo 'Downloading Pycharm' &&\
   rm /tmp/pycharm-* -r &&\
   ln -s /opt/pycharm/bin/pycharm.sh /usr/local/bin/pycharm
 
-ENTRYPOINT ["/usr/bin/tini", "-g", "--", "/usr/bin/entrypoint.sh"]
+ENTRYPOINT ["/usr/bin/entrypoint.sh"]
 CMD ["pycharm & /bin/bash"]
 
 COPY etc_ide.d/scripts/* /etc/ide.d/scripts/
