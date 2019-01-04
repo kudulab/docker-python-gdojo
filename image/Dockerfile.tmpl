@@ -17,8 +17,9 @@ RUN apt-get update &&\
   DEBIAN_FRONTEND=noninteractive apt-get install --no-install-recommends -y \
   wget curl libxrender1 libxi6 libgconf-2-4 libfreetype6 libxtst6 xfce4
 
+# original link: https://download.jetbrains.com/python/pycharm-community-2018.3.2.tar.gz
 RUN echo 'Downloading Pycharm' &&\
-  wget --quiet --progress=bar:force --no-check-certificate http://http.archive.ai-traders.com/files/pycharm/pycharm-community-2016.3.2.tar.gz -O /tmp/pycharm-community.tar.gz &&\
+  wget --quiet --progress=bar:force --no-check-certificate http://http.archive.ai-traders.com/files/pycharm/pycharm-community-2018.3.2.tar.gz -O /tmp/pycharm-community.tar.gz &&\
   echo 'Installing Pycharm' &&\
   mkdir -p /opt/pycharm &&\
   cd /tmp && tar -xf /tmp/pycharm-community.tar.gz &&\

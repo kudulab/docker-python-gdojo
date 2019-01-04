@@ -6,7 +6,7 @@ There is a **GIDE for each python version supported in python2-ide**.
 
 ## Specification
 All what's in [python2-ide](http://gitlab.ai-traders.com/stcdev/docker-python2-ide) and:
- * Pycharm 2016.3.2 community edition
+ * Pycharm 2018.3.2 community edition
 
 ## Usage
 1. Install [IDE](https://github.com/ai-traders/ide)

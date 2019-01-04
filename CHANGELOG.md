@@ -4,6 +4,7 @@
 * remove redundant and misleading /etc/ide.d/variables/ files
 * make copying of ~/.gnupg directory not verbose
 * remove uneeded tini
+* use newer pycharm pycharm-community-2018.3.2 (faster debugger, support for pytest)
 
 ### 0.2.1 (2017-Oct-22)
 
