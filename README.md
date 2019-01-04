@@ -45,45 +45,27 @@ Those files are used inside the ide docker image:
 3. `~/.profile` -- will be generated on docker container start, in
    order to ensure current directory is `/ide/work`.
 
+
 ## Development
-No tests are repeated from python2-ide, because I expect them to be passed if
- python2-ide image was published.
-
 ### Dependencies
-Bash, IDE, and Docker daemon. Needed is docker IDE image with:
-  * Docker daemon
-  * IDE (we run IDE in IDE; for end user tests)
-  * ruby
+* Bash
+* Docker daemon
+* Bats
+* Ide
 
-All the below tests are supposed to be invoked inside an IDE docker image:
-```bash
-ide
-bundle install
-```
-
-### Fast tests
-```bash
-# Run repocritic linting.
-bundle exec rake style
-```
-
-### Build
-Build docker image. This will generate imagerc file.
-
-```bash
-bundle exec rake build
-```
-
-### Long tests
-Having built the docker image, there are tests available:
-
-```bash
-# RSpec tests invoke ide command using Idefiles and the just built docker
-# image
-bundle exec rake install_ide
-bundle exec rake build_test_image
-bundle exec rake end_user
-```
+### Lifecycle
+1. In a feature branch:
+   * you make changes and add some docs to changelog (do not insert date or version)
+   * you build docker image: `./tasks build_py35`
+   * and test it: `./tasks itest_py35`
+1. You decide that your changes are ready and you:
+   * merge into master branch
+   * run locally:
+     * `./tasks set_version` to bump the patch version fragment by 1 OR
+     * e.g. `./tasks set_version 1.2.3` to bump to a particular version
+       Version is bumped in Changelog, variables.sh file and OVersion backend
+   * push to master onto private git server
+1. CI server (GoCD) tests and releases.
 
 ### Release
 This repo has conditional code release, because we build a docker image from this image:
