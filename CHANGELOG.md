@@ -1,3 +1,5 @@
+### 0.2.2 (2019-Jan-04)
+
 * reproducible builds - build docker image using last version from changelog
 * remove configs tests (itests are enough)
 * better order of Dockerfile directives (fast to do as last ones)

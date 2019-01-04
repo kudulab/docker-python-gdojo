@@ -2,15 +2,19 @@
 
 set -e
 if [[ ! -f ./releaser ]];then
-  wget --quiet http://http.archive.ai-traders.com/releaser/1.0.3/releaser
+  wget --quiet http://http.archive.ai-traders.com/releaser/1.0.8/releaser || { echo "Cannot download releaser, ignoring"; rm -f ./releaser; }
 fi
-source ./releaser
+if [[ -f ./releaser ]];then
+  source ./releaser
+fi
 if [[ ! -f ./docker-ops ]];then
   wget --quiet http://http.archive.ai-traders.com/docker-ops/0.2.2/docker-ops
 fi
-source ./docker-ops
+if [[ -f ./docker-ops ]];then
+  source ./docker-ops
+fi
 # This goes as last in order to let end user variables override default values
-releaser_init
+releaser_init || echo "Cannot init releaser, ignoring"
 
 image_name_no_registry="python2-gide"
 image_name="docker-registry.ai-traders.com/$image_name_no_registry"
