@@ -2,6 +2,7 @@
 * remove configs tests (itests are enough)
 * better order of Dockerfile directives (fast to do as last ones)
 * remove redundant and misleading /etc/ide.d/variables/ files
+* make copying of ~/.gnupg directory not verbose
 
 ### 0.2.1 (2017-Oct-22)
 

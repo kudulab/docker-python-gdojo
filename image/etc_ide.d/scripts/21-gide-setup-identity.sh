@@ -7,7 +7,7 @@
 
 if [ -d "$ide_identity/.gnupg" ]; then
   echo "copying ${ide_identity}/.gnupg"
-  ( set -x; cp -vR "${ide_identity}/.gnupg" "${ide_home}/"; )
+  ( set -x; cp -R "${ide_identity}/.gnupg" "${ide_home}/"; )
 else
   echo "${ide_identity}/.gnupg does not exist"
 fi
