@@ -43,10 +43,10 @@ function itest {
   source_imagerc "./image" "${imagerc_filename}"
   echo "Testing image: ${AIT_DOCKER_IMAGE_NAME}:${AIT_DOCKER_IMAGE_TAG}"
   # use the production ENTRYPOINT
-  echo "IDE_DOCKER_IMAGE=\"${AIT_DOCKER_IMAGE_NAME}:${AIT_DOCKER_IMAGE_TAG}\"" > ./Idefile.to_be_tested
-  echo "IDE_DRIVER=$ide_driver" >> ./Idefile.to_be_tested
-  echo "IDE_IDENTITY=\"$(pwd)/test/integration/identities/full\"" >> ./Idefile.to_be_tested
-  echo "IDE_WORK=$(pwd)/test/integration/end_user/test_ide_work" >> Idefile.to_be_tested
+  echo "DOJO_DOCKER_IMAGE=\"${AIT_DOCKER_IMAGE_NAME}:${AIT_DOCKER_IMAGE_TAG}\"" > ./Dojofile.to_be_tested
+  echo "DOJO_DRIVER=$ide_driver" >> ./Dojofile.to_be_tested
+  echo "DOJO_IDENTITY_OUTER=\"$(pwd)/test/integration/identities/full\"" >> ./Dojofile.to_be_tested
+  echo "DOJO_WORK_OUTER=$(pwd)/test/integration/end_user/test_dojo_work" >> Dojofile.to_be_tested
   time bats "$(pwd)/test/integration/end_user/bats"
   exit $?
 }

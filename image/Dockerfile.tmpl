@@ -31,9 +31,9 @@ RUN echo 'Downloading Pycharm' &&\
 ENTRYPOINT ["/usr/bin/entrypoint.sh"]
 CMD ["source virtualenv.sh; pycharm & /bin/bash"]
 
-COPY etc_ide.d/scripts/* /etc/ide.d/scripts/
-COPY pycharm-ide-level-settings /home/ide/pycharm-ide-level-settings/
-RUN chown ide:ide -R /home/ide
+COPY etc_dojo.d/scripts/* /etc/dojo.d/scripts/
+COPY pycharm-ide-level-settings /home/dojo/pycharm-ide-level-settings/
+RUN chown dojo:dojo -R /home/dojo
 
 ARG this_image_tag_arg
 ARG this_image_name_arg

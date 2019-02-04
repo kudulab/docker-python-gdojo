@@ -1,3 +1,5 @@
+* transform from ide docker image to dojo docker image #17139
+
 ### 0.2.3 (2019-Jan-04)
 
 * install gnome-icon-theme or else pycharm 2018.3.2 has no icons
