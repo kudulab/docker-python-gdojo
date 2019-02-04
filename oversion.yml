@@ -1,4 +1,0 @@
----
-backend: 'consul'
-project_name: 'docker-python2-gide'
-consul_url: 'http://consul.ai-traders.com:8500'

@@ -34,7 +34,3 @@ CMD ["source virtualenv.sh; pycharm & /bin/bash"]
 COPY etc_dojo.d/scripts/* /etc/dojo.d/scripts/
 COPY pycharm-ide-level-settings /home/dojo/pycharm-ide-level-settings/
 RUN chown dojo:dojo -R /home/dojo
-
-ARG this_image_tag_arg
-ARG this_image_name_arg
-ENV this_image_tag=${this_image_tag_arg} this_image_name=${this_image_name_arg}

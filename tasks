@@ -1,24 +1,23 @@
 #!/bin/bash
 
 set -e
-if [[ ! -f ./releaser ]];then
-  wget --quiet http://http.archive.ai-traders.com/releaser/1.0.8/releaser || { echo "Cannot download releaser, ignoring"; rm -f ./releaser; }
+if [[ ! -f ./releaser ]]; then
+  wget --quiet http://http.archive.ai-traders.com/releaser/1.1.0/releaser || { echo "Cannot download releaser, ignoring."; }
 fi
-if [[ -f ./releaser ]];then
+if [[ -f ./releaser ]]; then
   source ./releaser
 fi
-if [[ ! -f ./docker-ops ]];then
-  wget --quiet http://http.archive.ai-traders.com/docker-ops/0.2.2/docker-ops
+if [[ ! -f ./docker-ops ]]; then
+  wget --quiet http://http.archive.ai-traders.com/docker-ops/0.3.3/docker-ops || { echo "Cannot download docker-ops, ignoring."; }
 fi
-if [[ -f ./docker-ops ]];then
+if [[ -f ./docker-ops ]]; then
   source ./docker-ops
 fi
-# This goes as last in order to let end user variables override default values
-releaser_init || echo "Cannot init releaser, ignoring"
 
-image_name_no_registry="python2-gide"
-image_name="docker-registry.ai-traders.com/$image_name_no_registry"
+image_name="python2-gide"
 image_dir="./image"
+imagerc_basename="imagerc"
+image_registry="docker-registry.ai-traders.com"
 
 function base_ide_last_tag {
   git ls-remote --tags git@git.ai-traders.com:stcdev/docker-python2-ide.git | sort -t '/' -k 3 -V | awk '{print $2}' | cut -d'/' -f3 | tail -1
@@ -26,46 +25,44 @@ function base_ide_last_tag {
 
 function build {
   prefix=$1
-  imagerc_filename="imagerc.$prefix"
   base_img_version=$(base_ide_last_tag)
   base_img_tag=$prefix-$base_img_version
   image_tag=$prefix-$(git rev-parse HEAD)
-  production_image_tag="$prefix-$(get_last_version_from_changelog ${changelog_file})_${base_img_version}"
-  docker_build_options="--build-arg this_image_name_arg=${image_name_no_registry} --build-arg this_image_tag_arg=${production_image_tag} -f Dockerfile.$prefix"
   sed "s/{{BASE_IMAGE_VERSION}}/${base_img_tag}/g" image/Dockerfile.tmpl > image/Dockerfile.$prefix
-  docker_build "${image_dir}" "${imagerc_filename}" "${image_name}" "$image_tag" $docker_build_options
+  ( set -x; cd "${image_dir}"; docker build -f Dockerfile.$prefix -t "${image_name}:${image_tag}" .; )
+  docker_ops::create_imagerc "${image_dir}" "${imagerc_basename}.${prefix}" "${image_name}" "${image_tag}" "${image_registry}"
+  docker_ops::push_tmp "${image_name}" "${image_tag}" "${image_registry}"
 }
 
 function itest {
   prefix=$1
-  imagerc_filename="imagerc.$prefix"
-  # Test end-cases
-  source_imagerc "./image" "${imagerc_filename}"
-  echo "Testing image: ${AIT_DOCKER_IMAGE_NAME}:${AIT_DOCKER_IMAGE_TAG}"
-  # use the production ENTRYPOINT
-  echo "DOJO_DOCKER_IMAGE=\"${AIT_DOCKER_IMAGE_NAME}:${AIT_DOCKER_IMAGE_TAG}\"" > ./Dojofile.to_be_tested
-  echo "DOJO_DRIVER=$ide_driver" >> ./Dojofile.to_be_tested
+  set -e
+  docker_ops::ensure_temp_image "${image_dir}" "${imagerc_basename}.${prefix}"
+  echo "Testing image: ${AIT_DOCKER_IMAGE_URL}"
+  echo "DOJO_DOCKER_IMAGE=\"${AIT_DOCKER_IMAGE_URL}\"" > ./Dojofile.to_be_tested
   echo "DOJO_IDENTITY_OUTER=\"$(pwd)/test/integration/identities/full\"" >> ./Dojofile.to_be_tested
-  echo "DOJO_WORK_OUTER=$(pwd)/test/integration/end_user/test_dojo_work" >> Dojofile.to_be_tested
+  echo "DOJO_WORK_OUTER=$(pwd)/test/integration/end_user/test_dojo_work" >> ./Dojofile.to_be_tested
   time bats "$(pwd)/test/integration/end_user/bats"
-  exit $?
 }
 
 function publish {
   prefix=$1
-  imagerc_filename="imagerc.$prefix"
-  source_imagerc "${image_dir}"  "${imagerc_filename}"
-  gide_version=$(get_last_version_from_changelog $changelog_file)
-  ide_version=$(base_ide_last_tag)
-  production_image_tag="$prefix-${gide_version}_${ide_version}"
-  docker_push "${AIT_DOCKER_IMAGE_NAME}" "${AIT_DOCKER_IMAGE_TAG}" "${production_image_tag}"
+  base_img_version=$(base_ide_last_tag)
+  gide_img_version=$(get_last_version_from_changelog "${changelog_file}")
+  production_image_tag="$prefix-${gide_img_version}_${base_img_version}"
+  docker_ops::push_production "${image_dir}" "${imagerc_basename}.${prefix}" "${image_name}" "${production_image_tag}" "${image_registry}"
 }
 
 command="$1"
 case "${command}" in
   set_version)
-      next_version=$(get_next_oversion)
-      set_version_in_changelog "${changelog_file}" "${next_version}"
+      if [[ -n "$2" ]]; then
+        next_version="$2"
+      else
+        version=$(releaser::get_last_version_from_whole_changelog "${changelog_file}")
+        next_version=$(releaser::bump_patch_version "${version}")
+      fi
+      releaser::set_version_in_changelog "${changelog_file}" "${next_version}"
       exit $?
       ;;
   verify_version)
@@ -76,7 +73,7 @@ case "${command}" in
         log_info "Current commit is already tagged"
       else
         log_info "Current commit has no tags, full verify_version"
-        verify_version_for_release
+        releaser::verify_changelog_version
       fi
       exit $?
       ;;
@@ -104,11 +101,9 @@ case "${command}" in
         log_info "Current commit is already tagged, skipping code release"
       else
         log_info "Current commit has no tags, starting code release..."
-        verify_version_for_release
-        git_tag_from_oversion
-        old_version=$(get_next_oversion)
-        next_version=$(bump_patch_version "${old_version}")
-        set_next_oversion "${next_version}"
+        ./tasks verify_version
+        version=$(releaser::get_last_version_from_whole_changelog "${changelog_file}")
+        git tag "${version}" && git push origin "${version}"
       fi
       exit $?
       ;;
