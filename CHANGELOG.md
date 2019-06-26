@@ -1,3 +1,6 @@
+* make it a public image
+* take base image tag based on gocd pipeline dependency
+
 ### 0.3.0 (2019-Feb-04)
 
 * newer releaser and docker-ops

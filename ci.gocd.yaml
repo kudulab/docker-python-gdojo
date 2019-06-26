@@ -25,7 +25,7 @@ pipelines:
       - build:
           clean_workspace: true
           jobs:
-            py27:
+            py2:
               resources:
                 - docker_builder
               artifacts:
@@ -37,8 +37,8 @@ pipelines:
                     command: /bin/bash
                     arguments:
                       - -c
-                      - ./tasks build_py27
-            py35:
+                      - ./tasks build_py2
+            py3:
               resources:
                 - docker_builder
               artifacts:
@@ -50,40 +50,40 @@ pipelines:
                     command: /bin/bash
                     arguments:
                       - -c
-                      - ./tasks build_py35
+                      - ./tasks build_py3
       - itest:
           clean_workspace: true
           jobs:
-            py27:
+            py2:
               resources:
                 - docker_builder
               tasks:
                 - fetch:
                     stage: build
-                    job: py27
+                    job: py2
                     is_file: yes
-                    source: imagerc.py27
+                    source: imagerc.py2-gdojo
                     destination: image/
                 - exec:
                     command: /bin/bash
                     arguments:
                       - -c
-                      - ./tasks itest_py27
-            py35:
+                      - ./tasks itest_py2
+            py3:
               resources:
                 - docker_builder
               tasks:
                 - fetch:
                     stage: build
-                    job: py35
+                    job: py3
                     is_file: yes
-                    source: imagerc.py35
+                    source: imagerc.py3-gdojo
                     destination: image/
                 - exec:
                     command: /bin/bash
                     arguments:
                       - -c
-                      - ./tasks itest_py35
+                      - ./tasks itest_py3
       - release:
           clean_workspace: true
           jobs:
@@ -99,33 +99,33 @@ pipelines:
       - publish:
           clean_workspace: true
           jobs:
-            py27:
+            py2:
               resources:
                 - docker_builder
               tasks:
                 - fetch:
                     stage: build
-                    job: py27
+                    job: py2
                     is_file: yes
-                    source: imagerc.py27
+                    source: imagerc.py2-gdojo
                     destination: image/
                 - exec:
                     command: /bin/bash
                     arguments:
                       - -c
-                      - ./tasks publish_py27
-            py35:
+                      - ./tasks publish_py2
+            py3:
               resources:
                 - docker_builder
               tasks:
                 - fetch:
                     stage: build
-                    job: py35
+                    job: py3
                     is_file: yes
-                    source: imagerc.py35
+                    source: imagerc.py3-gdojo
                     destination: image/
                 - exec:
                     command: /bin/bash
                     arguments:
                       - -c
-                      - ./tasks publish_py35
+                      - ./tasks publish_py3

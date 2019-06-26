@@ -6,10 +6,8 @@
 ###########################################################################
 
 if [ -d "$dojo_identity/.gnupg" ]; then
-  echo "copying ${dojo_identity}/.gnupg"
-  ( set -x; cp -R "${dojo_identity}/.gnupg" "${dojo_home}/"; )
-else
-  echo "${dojo_identity}/.gnupg does not exist"
+  echo "copying ${dojo_identity}/.gnupg into ${dojo_home}"
+  cp -Rp "${dojo_identity}/.gnupg" "${dojo_home}/"
 fi
 
 echo "idea.config.path=${dojo_work}/.intellij-ide/config
