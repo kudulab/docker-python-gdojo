@@ -27,7 +27,6 @@ CMD ["pycharm & /bin/bash"]
 
 # ensure pretty bash prompt
 COPY bashrc /home/dojo/.bashrc
-#COPY pycharm-ide-level-settings /home/dojo/pycharm-ide-level-settings/
 RUN chown dojo:dojo -R /home/dojo
 
 COPY etc_dojo.d/scripts/* /etc/dojo.d/scripts/

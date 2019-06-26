@@ -14,3 +14,5 @@ ops/
 pycharm.tar.gz
 test_dojo_work/.idea/encodings.xml
 Dojofile.example
+.pycharm
+venv

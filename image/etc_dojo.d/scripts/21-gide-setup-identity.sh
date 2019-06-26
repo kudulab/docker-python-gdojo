@@ -10,16 +10,7 @@ if [ -d "$dojo_identity/.gnupg" ]; then
   cp -Rp "${dojo_identity}/.gnupg" "${dojo_home}/"
 fi
 
-echo "idea.config.path=${dojo_work}/.intellij-ide/config
-idea.system.path=${dojo_work}/.intellij-ide/system
-idea.plugins.path=${dojo_work}/.intellij-ide/plugins
-idea.log.path=${dojo_work}/.intellij-ide/log" > "${dojo_home}/idea.properties"
-
-if [ -d "${dojo_work}/.intellij-ide" ]; then
-  echo "Directory: ${dojo_work}/.intellij-ide exists"
-else
-  echo "Setting up directory: ${dojo_work}/.intellij-ide"
-  mkdir ${dojo_work}/.intellij-ide
-  cp -R "${dojo_home}/pycharm-ide-level-settings/"* "${dojo_work}/.intellij-ide/"
-  chown dojo:dojo -R "${dojo_work}/.intellij-ide/"
-fi
+echo "idea.config.path=${dojo_work}/.pycharm/config
+idea.system.path=${dojo_work}/.pycharm/system
+idea.plugins.path=${dojo_work}/.pycharm/plugins
+idea.log.path=${dojo_work}/.pycharm/log" > "${dojo_home}/idea.properties"
