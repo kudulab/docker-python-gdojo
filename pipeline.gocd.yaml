@@ -1,81 +1,59 @@
+format_version: 4
 pipelines:
-  docker-python2-gide:
-    group: stcdev
+  docker-python-gdojo:
+    group: python
     label_template: "${git[:8]}"
     materials:
       git:
-        git: "git@git.ai-traders.com:stcdev/docker-python2-gide.git"
-        branch: master
+        type: configrepo
+        blacklist:
+          - "**/*.md"
       python2ide:
-        pipeline: docker-python2-ide
+        pipeline: docker-python-dojo
         stage: publish
+    secure_variables:
+      VAULT_TOKEN: "AES:3qc0tcONNq0Y0zoUW/a+4A==:z3DyGbZxTccxOznjF/u/ihqhGJJENpcoLUgdyRPhrVA="
     stages:
-      - validate:
+      - build:
           clean_workspace: true
           jobs:
-            verify_version:
+            docker_image:
               resources:
                 - docker_builder
+              artifacts:
+                - build:
+                    source: image/imagerc.py2-gdojo
+                    destination:
+                - build:
+                    source: image/imagerc.py3-gdojo
+                    destination:
               tasks:
                - exec:
                   command: /bin/bash
                   arguments:
                     - -c
                     - ./tasks verify_version
-      - build:
-          clean_workspace: true
-          jobs:
-            py2:
-              resources:
-                - docker_builder
-              artifacts:
-                - build:
-                    source: image/imagerc*
-                    destination:
-              tasks:
-                - exec:
-                    command: /bin/bash
-                    arguments:
-                      - -c
-                      - ./tasks build_py2
-            py3:
-              resources:
-                - docker_builder
-              artifacts:
-                - build:
-                    source: image/imagerc*
-                    destination:
-              tasks:
-                - exec:
-                    command: /bin/bash
-                    arguments:
-                      - -c
-                      - ./tasks build_py3
+               - exec:
+                  command: /bin/bash
+                  arguments:
+                    - -c
+                    - ./tasks build
       - itest:
           clean_workspace: true
           jobs:
-            py2:
+            end_user:
               resources:
                 - docker_builder
               tasks:
                 - fetch:
                     stage: build
-                    job: py2
+                    job: docker_image
                     is_file: yes
                     source: imagerc.py2-gdojo
                     destination: image/
-                - exec:
-                    command: /bin/bash
-                    arguments:
-                      - -c
-                      - ./tasks itest_py2
-            py3:
-              resources:
-                - docker_builder
-              tasks:
                 - fetch:
                     stage: build
-                    job: py3
+                    job: docker_image
                     is_file: yes
                     source: imagerc.py3-gdojo
                     destination: image/
@@ -83,7 +61,7 @@ pipelines:
                     command: /bin/bash
                     arguments:
                       - -c
-                      - ./tasks itest_py3
+                      - ./tasks itest
       - release:
           clean_workspace: true
           jobs:
@@ -95,32 +73,23 @@ pipelines:
                     command: /bin/bash
                     arguments:
                       - -c
-                      - ./tasks code_release
+                      - ./tasks release
       - publish:
           clean_workspace: true
           jobs:
-            py2:
+            docker_image:
               resources:
                 - docker_builder
               tasks:
                 - fetch:
                     stage: build
-                    job: py2
+                    job: docker_image
                     is_file: yes
                     source: imagerc.py2-gdojo
                     destination: image/
-                - exec:
-                    command: /bin/bash
-                    arguments:
-                      - -c
-                      - ./tasks publish_py2
-            py3:
-              resources:
-                - docker_builder
-              tasks:
                 - fetch:
                     stage: build
-                    job: py3
+                    job: docker_image
                     is_file: yes
                     source: imagerc.py3-gdojo
                     destination: image/
@@ -128,4 +97,4 @@ pipelines:
                     command: /bin/bash
                     arguments:
                       - -c
-                      - ./tasks publish_py3
+                      - ./tasks publish
