@@ -13,9 +13,9 @@ The same python versions are supported by python-gdojo as by python-dojo. This d
 2. Provide a Dojofile:
 ```
 # docker tag format: <py3 or py2>-<THIS_IMAGE_VERSION>_<BASE_IMAGE_VERSION>
-DOJO_DOCKER_IMAGE="kudulab/python-gdojo:py3-1.0.0_1.0.1"
+DOJO_DOCKER_IMAGE="kudulab/python-gdojo:py3-1.0.1_1.0.1"
 # or:
-DOJO_DOCKER_IMAGE="kudulab/python-gdojo:py2-1.0.0_1.0.1"
+DOJO_DOCKER_IMAGE="kudulab/python-gdojo:py2-1.0.1_1.0.1"
 ```
 3. Run, example commands:
 

@@ -1,3 +1,7 @@
+### 1.0.1 (2019-Jun-28)
+
+* fix publish task
+
 ### 1.0.0 (2019-Jun-28)
 
 * make it a public image

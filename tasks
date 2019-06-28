@@ -95,10 +95,10 @@ function itest {
 function publish {
   prefix=$1
   base_image_tag=$(base_image_last_tag)
-  this_repo_version=$(get_last_version_from_changelog "${changelog_file}")
+  this_repo_version=$(releaser::get_last_version_from_whole_changelog "${changelog_file}")
   production_image_tag="$prefix-${this_repo_version}_${base_image_tag}"
   docker_ops::ensure_pulled_image "${image_dir}" "imagerc.${prefix}-gdojo"
-  docker_ops::push_production "${image_dir}" "imagerc.${prefix}-gdojo" "${image_name}" "${production_image_tag}" "${image_registry}"
+  docker_ops::retag_push "${image_dir}" "imagerc.${prefix}-gdojo" "${image_name}" "${production_image_tag}" "${image_registry}"
 }
 
 
