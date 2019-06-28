@@ -1,108 +1,98 @@
-# docker-python2-gide
+# docker-python-gdojo
 
-A Dojo docker image with Python runtime, CLI and graphical tools.
-Based on [python2-ide](http://gitlab.ai-traders.com/stcdev/docker-python2-ide).
-There is a **GIDE for each python version supported in python2-ide**.
+A Dojo docker image with Python runtime and [PyCharm](https://www.jetbrains.com/pycharm/).
 
 ## Specification
-All what's in [python2-ide](http://gitlab.ai-traders.com/stcdev/docker-python2-ide) and:
- * Pycharm 2018.3.2 community edition
+
+This docker image is based on [python-dojo](https://github.com/kudulab/docker-python-dojo) docker image.
+The same python versions are supported by python-gdojo as by python-dojo. This docker image contains all what's in python-dojo and:
+ * Pycharm 2019.1.3 community edition
 
 ## Usage
 1. Install [Dojo](https://github.com/ai-traders/dojo)
-2. Provide an Dojofile:
+2. Provide a Dojofile:
 ```
-# python2-gide is tagged as: <THIS_IMAGE_VERSION>_<BASE_IMAGE_VERSION>
-DOJO_DOCKER_IMAGE="docker-registry.ai-traders.com/python2-gide:0.1.1_0.3.1"
-# or just:
-DOJO_DOCKER_IMAGE="docker-registry.ai-traders.com/python2-gide:latest"
+# docker tag format: <py3 or py2>-<THIS_IMAGE_VERSION>_<BASE_IMAGE_VERSION>
+DOJO_DOCKER_IMAGE="kudulab/python-gdojo:py3-1.0.0_1.0.1"
+# or:
+DOJO_DOCKER_IMAGE="kudulab/python-gdojo:py2-1.0.0_1.0.1"
 ```
 3. Run, example commands:
 
 ```bash
-# to run IntelliJ (your terminal must be interactive):
+# to run PyCharm (your terminal must be interactive):
 dojo
 
-# or this way (default command):
-dojo pycharm & /bin/bash
+# or this way:
+dojo "pycharm & /bin/bash"
+```
 
-# then run any python command like in python2-ide, e.g.:
+Afterwards, from inside of the docker container, you can run any python command like in python-dojo, e.g.:
+```
 python --version
 ```
 
 By default:
  * current directory in docker container is `/dojo/work`.
- * default command is `source virtualenv.sh; pycharm & /bin/bash` and it starts in a new graphical window
+ * default command is `pycharm & /bin/bash` and it starts PyCharm in a new graphical window
 
-If you want to have python interpreter already set, provide such a file (do not customize it):
-```
-$ cat virtualenv.sh
-#!/bin/bash
 
-# This must be related to /dojo/work
-virtualenv_dir="/home/dojo/virtualenv"
-virtualenv_dir=${1:-$virtualenv_dir}
-echo "Virtualenv directory is: ${virtualenv_dir}"
-virtualenv "${virtualenv_dir}" && source "${virtualenv_dir}"/bin/activate && pip install -r requirements_dev.txt;
+### Configuration using Virtualenv
+The very first time you run PyCharm for your project, you have to **add Python interpreter**.
+ If you want to use a Virtualenv environment, it is recommended to set its location
+ to a local directory, e.g. `/dojo/work/venv`. Then, you have to choose
+ Base Interpreter, e.g.: `/usr/local/bin/python3.7`. Do not set: "Inherit global site-packages",
+ unless you really need it. (It would result in needing sudo to install packages
+ and also in the `/dojo/work/venv` directory not storing all the packages
+ needed by your project). This is illustrated on the image below:
+ ![setting Python interpreter](pycharm-set-python-interpreter.png "setting Python interpreter")
 
-# This is needed if you want to change virtualenv dir
-# virtualenv_dir_old="/home/dojo/virtualenv"
-# (set -x; find .intellij-ide ! -name '*.zip' ! -path "*.log" ! -path "*/system/*" ! -path "*history/*" -type f -exec bash -c "sed -i \"s!${virtualenv_dir_old}!${virtualenv_dir}!g\" {}" \;; )
-# watch out, when we use /home/dojo/virtualenv, pycharm sometimes saves it as: $USER_HOME$/virtualenv
-```
-and run `source virtualenv.sh`, before doing anything in PyCharm.
+Once you customize your PyCharm settings (including the Python interpreter),
+ a local directory: `.pycharm` will keep all those
+ settings (local to your current directory).
 
-### Configuration
-Those files are used inside the ide docker image:
+You can use the `requirements.txt` file to list all your project Python dependencies.
+ In order to install them, you can:
+   * either do it from PyCharm. (As soon as you modify the `requirements.txt` file, PyCharm will ask whether to install a requirement)
+   * or do it from commandline: `source venv/bin/activate && pip install -r requirements.txt`
 
-1. `~/.ssh/config` -- will be generated on docker container start
-2. `~/.ssh/id_rsa` -- it must exist locally, because it is a secret
- (but the whole `~/.ssh` will be copied)
-2. `~/.gitconfig` -- if exists locally, will be copied
-2. `~/.gnupg` -- if exists locally, will be copied
-3. `~/.profile` -- will be generated on docker container start, in
-   order to ensure current directory is `/dojo/work`.
+Thanks to that, you can work in different docker containers,
+created from `python-gdojo` docker image, and you won't have to set PyCharm
+again, and you also won't have to reinstall all your project Python dependencies.
 
-#### IntelliJ configuration
-IntelliJ has 2 types of settings ([source](https://www.jetbrains.com/help/idea/configuring-project-and-ide-settings.html)):
+#### IntelliJ settings background
+If you want to read more about IntelliJ settings, read [this](https://www.jetbrains.com/help/idea/configuring-project-and-ide-settings.html) and [this](https://intellij-support.jetbrains.com/hc/en-us/articles/206544519-Directories-used-by-the-IDE-to-store-settings-caches-plugins-and-logs).
+ Basically, IntelliJ has 2 types of settings:
    * project-level stored in <project-dir>/.idea
-   * IDE-level stored in a directory like: ~/.PyCharmCE2016.3.
+   * IDE-level stored in a directory like: ~/.PyCharmCE2016.3. (different name for each PyCharm version)
 
-We want to be able to change settings in PyCharm, close PyCharm and on the next
-PyCharm usage, the settings should be preserved. Thus, let's keep the IDE-level
-settings in the directory: `${dojo_work}/.intellij-ide`. This docker image provides
- some sound defaults but only if you arealdy don't have this directory created.
- You can git commit some directories from `${dojo_work}/.intellij-ide/config` if you want to.
-
-[source1](https://intellij-support.jetbrains.com/hc/en-us/articles/207240985-Changing-IDE-default-directories-used-for-config-plugins-and-caches-storage), [source2](https://intellij-support.jetbrains.com/hc/en-us/articles/206544519-Directories-used-by-the-IDE-to-store-settings-caches-plugins-and-logs).
-
-If you want to use different path for virtualenv, set new value to the virtualenv_dir in virtualenv.sh and source it.
+Here we [set](https://intellij-support.jetbrains.com/hc/en-us/articles/207240985-Changing-IDE-default-directories-used-for-config-plugins-and-caches-storage) IDE-level stored settings to be kept in `.pycharm` directory.
 
 ## Development
 ### Dependencies
 * Bash
 * Docker daemon
 * Bats
-* Dojo
+* [Dojo](https://github.com/ai-traders/dojo)
 
 ### Lifecycle
 1. In a feature branch:
-   * you make changes and add some docs to changelog (do not insert date or version)
-   * you build docker image: `./tasks build_py35`
-   * and test it: `./tasks itest_py35`
+    * you make changes and add some docs to changelog (do not insert date or version)
+    * you build docker images: `./tasks build_local_py3`, `./tasks build_local_py2`
+    * and test them: `./tasks itest_py3`, `./tasks itest_py2`
+    * to test it interactively: `./tasks example`
 1. You decide that your changes are ready and you:
-   * merge into master branch
-   * run locally:
-     * `./tasks set_version` to bump the patch version fragment by 1 OR
-     * e.g. `./tasks set_version 1.2.3` to bump to a particular version
-       Version is bumped in Changelog, variables.sh file and OVersion backend
-   * push to master onto private git server
+    * merge into master branch
+    * run locally:
+      * `./tasks set_version` to bump the patch version fragment by 1 OR
+      * e.g. `./tasks set_version 1.2.3` to bump to a particular version
+    * push to master onto private git server
 1. CI server (GoCD) tests and releases.
 
 ### Release
 This repo has conditional code release, because we build a docker image from this image:
-  * if there are new commits in ci branch
-  * if new python2-ide docker image was published
+  * if there are new commits in this git repo
+  * if new base docker image (python-dojo) was published
 
 In the latter case there are no new commits in this git repo and release was
  already done before. Then, we only want to build and publish new docker image.

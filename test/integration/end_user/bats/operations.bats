@@ -30,6 +30,8 @@ load '/opt/bats-assert/load.bash'
   assert_line --partial "Python"
   assert_equal "$status" 0
 }
+# in practice we will use: "source venv/bin/activate && pip install -r requirements.txt",
+# but we keep no venv directory in tests
 @test "public python package can be installed with pip, locally" {
   run /bin/bash -c "dojo -c Dojofile.to_be_tested \"pip install --user tabulate && tabulate --help\""
   # this is printed on test failure
