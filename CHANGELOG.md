@@ -1,8 +1,10 @@
+### 1.0.0 (2019-Jun-28)
+
 * make it a public image
 * take base image tag based on gocd pipeline dependency
 * do not set any defaults for PyCharm, but set the Pycharm config dir to `/dojo/work/.pycharm`,
  thanks to this we can use different python-gdojo containers and Pycharm configs
-  will be shared for the context of a python project 
+  will be shared for the context of a python project
 
 ### 0.3.0 (2019-Feb-04)
 
