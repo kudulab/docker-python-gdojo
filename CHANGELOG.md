@@ -1,3 +1,7 @@
+### 1.0.2 (2020-Oct-25)
+
+* newer base image will be used: kudulab/python-dojo:py3-1.0.2
+
 ### 1.0.1 (2019-Jun-28)
 
 * fix publish task

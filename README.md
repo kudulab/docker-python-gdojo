@@ -9,7 +9,7 @@ The same python versions are supported by python-gdojo as by python-dojo. This d
  * Pycharm 2019.1.3 community edition
 
 ## Usage
-1. Install [Dojo](https://github.com/ai-traders/dojo)
+1. Install [Dojo](https://github.com/kudulab/dojo)
 2. Provide a Dojofile:
 ```
 # docker tag format: <py3 or py2>-<THIS_IMAGE_VERSION>_<BASE_IMAGE_VERSION>

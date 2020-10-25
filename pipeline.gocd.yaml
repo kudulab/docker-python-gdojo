@@ -12,7 +12,7 @@ pipelines:
         pipeline: docker-python-dojo
         stage: publish
     secure_variables:
-      VAULT_TOKEN: "AES:3qc0tcONNq0Y0zoUW/a+4A==:z3DyGbZxTccxOznjF/u/ihqhGJJENpcoLUgdyRPhrVA="
+      VAULT_TOKEN: "AES:te2uNqAniTOY/0EsaPB0ZA==:6FAUREFD+WDxIpVFVphG6BpdmSyvITB+kWZ8FhbJa4g="
     stages:
       - build:
           clean_workspace: true
