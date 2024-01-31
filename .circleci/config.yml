@@ -1,0 +1,97 @@
+version: 2.1
+
+workflows:
+  # Environment variables required in CircleCI environment:
+  #  - DOCKERHUB_USERNAME
+  #  - DOCKERHUB_TOKEN
+  docker-python-gdojo:
+    jobs:
+      - build
+      - verify_version
+      - itest:
+          requires:
+            - build
+      - release:
+          requires:
+            - itest
+            - verify_version
+          filters:
+            branches:
+              only: master
+      - publish:
+          requires:
+            - release
+
+jobs:
+  build:
+    executor: platform
+    steps:
+      - setup
+      - run:
+          command: /bin/bash -c "./tasks build"
+      - run:
+          command: /bin/bash -c "./tasks push"
+      - persist_to_workspace:
+          root: ~/repo
+          paths:
+            - image/imagerc
+
+  verify_version:
+    executor: platform
+    steps:
+      - setup
+      - run:
+          command: /bin/bash -c "./tasks verify_version"
+
+  itest:
+    executor: platform
+    steps:
+      - setup
+      - run:
+          name: Install dojo
+          command: |
+            version="0.11.0"
+            wget -O /tmp/dojo https://github.com/kudulab/dojo/releases/download/${version}/dojo_linux_amd64
+            chmod +x /tmp/dojo
+            sudo mv /tmp/dojo /usr/bin/dojo
+      - run:
+          command: sudo git clone https://github.com/bats-core/bats-core /opt/bats-core
+      - run:
+          command: sudo git clone https://github.com/bats-core/bats-assert /opt/bats-assert
+      - run:
+          command: sudo git clone https://github.com/bats-core/bats-support /opt/bats-support
+      - attach_workspace:
+          at: ~/repo
+      - run:
+          command: /bin/bash -c "./tasks itest"
+
+  release:
+    executor: platform
+    steps:
+      - setup
+      - run:
+          command: /bin/bash -c "./tasks release"
+
+  publish:
+    executor: platform
+    steps:
+      - setup
+      - attach_workspace:
+          at: ~/repo
+      - run:
+          command: /bin/bash -c "./tasks publish"
+
+commands:
+  setup:
+    steps:
+      - checkout
+      - add_ssh_keys:
+          fingerprints:
+            # get it with: ssh-keygen -E md5 -lf ~/.ssh/the-key-name
+            - "21:2d:df:c0:2a:a6:b8:ba:0b:40:fd:93:b7:03:0d:33"
+
+executors:
+  platform:
+    machine:
+      image: ubuntu-2204:2023.02.1
+    working_directory: ~/repo

@@ -13,9 +13,9 @@ The same python versions are supported by python-gdojo as by python-dojo. This d
 2. Provide a Dojofile:
 ```
 # docker tag format: <py3 or py2>-<THIS_IMAGE_VERSION>_<BASE_IMAGE_VERSION>
-DOJO_DOCKER_IMAGE="kudulab/python-gdojo:py3-1.0.1_1.0.1"
+DOJO_DOCKER_IMAGE="kudulab/python-gdojo:2.0.0"
 # or:
-DOJO_DOCKER_IMAGE="kudulab/python-gdojo:py2-1.0.1_1.0.1"
+DOJO_DOCKER_IMAGE="kudulab/python-gdojo:latest"
 ```
 3. Run, example commands:
 
@@ -75,19 +75,16 @@ Here we [set](https://intellij-support.jetbrains.com/hc/en-us/articles/207240985
 * Bats
 * [Dojo](https://github.com/ai-traders/dojo)
 
-### Lifecycle
-1. In a feature branch:
-    * you make changes and add some docs to changelog (do not insert date or version)
-    * you build docker images: `./tasks build_local_py3`, `./tasks build_local_py2`
-    * and test them: `./tasks itest_py3`, `./tasks itest_py2`
-    * to test it interactively: `./tasks example`
-1. You decide that your changes are ready and you:
-    * merge into master branch
-    * run locally:
-      * `./tasks set_version` to bump the patch version fragment by 1 OR
-      * e.g. `./tasks set_version 1.2.3` to bump to a particular version
-    * push to master onto private git server
-1. CI server (GoCD) tests and releases.
+## Contributing
+Instructions how to update this project.
+
+1. Create a new feature branch from the main branch
+1. Work on your changes in that feature branch. If you want, describe you changes in [CHANGELOG.md](CHANGELOG.md)
+1. Build your image locally to check that it succeeds: `./tasks build`
+1. Test your image locally: `./tasks itest`. You may need to install the test framework - you can do it following [these instructions](https://github.com/kudulab/docker-terraform-dojo/blob/master/tasks#L66)
+1. If you are happy with the results, create a PR from your feature branch to master branch
+
+After this, someone will read your PR, merge it and ensure version bump (using `./tasks set_version`). CI pipeline will run to automatically build and test docker image, release the project and publish the docker image.
 
 ### Release
 This repo has conditional code release, because we build a docker image from this image:
@@ -99,7 +96,7 @@ In the latter case there are no new commits in this git repo and release was
 
 ## License
 
-Copyright 2019 Ewa Czechowska, Tomasz Sętkowski
+Copyright 2019-2024 Ava Czechowska, Tom Sętkowski
 
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.

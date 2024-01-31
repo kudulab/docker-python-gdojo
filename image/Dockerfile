@@ -1,4 +1,4 @@
-FROM {{BASE_IMAGE}}
+FROM kudulab/python-dojo:2.0.1
 
 # * locales package is 16MB but at least we have locale configured
 # * dpkg-reconfigure --frontend=noninteractive locales -- for already installed

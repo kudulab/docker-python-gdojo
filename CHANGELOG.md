@@ -1,3 +1,8 @@
+### 2.0.0 (2024-Jan-31)
+
+* newer base image will be used: kudulab/python-dojo:2.0.1
+* dropped support for python 2
+
 ### 1.0.2 (2020-Oct-25)
 
 * newer base image will be used: kudulab/python-dojo:py3-1.0.2
