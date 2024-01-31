@@ -6,7 +6,7 @@ A Dojo docker image with Python runtime and [PyCharm](https://www.jetbrains.com/
 
 This docker image is based on [python-dojo](https://github.com/kudulab/docker-python-dojo) docker image.
 The same python versions are supported by python-gdojo as by python-dojo. This docker image contains all what's in python-dojo and:
- * Pycharm 2019.1.3 community edition
+ * Pycharm community edition
 
 ## Usage
 1. Install [Dojo](https://github.com/kudulab/dojo)
