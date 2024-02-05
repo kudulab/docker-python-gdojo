@@ -1,3 +1,8 @@
+### 2.0.1 (2024-Feb-06)
+
+* newer base image will be used: kudulab/python-dojo:2.0.2
+* limit output from this image init scripts
+
 ### 2.0.0 (2024-Jan-31)
 
 * newer base image will be used: kudulab/python-dojo:2.0.1
