@@ -5,8 +5,14 @@
 # Fails if any required secret or configuration file is missing.
 ###########################################################################
 
+function log_info {
+  if [[ "${DOJO_LOG_LEVEL}" != "silent" ]] && [[ "${DOJO_LOG_LEVEL}" != "error" ]] && [[ "${DOJO_LOG_LEVEL}" != "warn" ]]; then
+    echo -e "$(date "+%d-%m-%Y %T") python-gdojo info: ${1}" >&2
+  fi
+}
+
 if [ -d "$dojo_identity/.gnupg" ]; then
-  echo "copying ${dojo_identity}/.gnupg into ${dojo_home}"
+  log_info "copying ${dojo_identity}/.gnupg into ${dojo_home}"
   cp -Rp "${dojo_identity}/.gnupg" "${dojo_home}/"
 fi
 
